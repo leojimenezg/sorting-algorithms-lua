@@ -57,10 +57,44 @@ local function shuffleTable(t)
 	return t
 end
 
+--[[
+Gets the index of the minimun value of a table going through all elements.
+@param t: the table in form of an array to be used by the function.
+@param first: the starting index for the search process.
+@param last: the ending index for the search process.
+@return: returns the index of the minimun value.
+]]
+local function getMinIndex(t, first, last)
+	local min_index = first
+	for i = first, last do
+		if t[i] < t[min_index] then
+			min_index = i
+		end
+	end
+	return min_index
+end
+
+--[[
+Gets the index of the maximum value of a table going through all elements.
+@param t: the table in form of an array to be used by the function.
+@param first: the starting index for the search process.
+@param last: the ending index for the search process.
+@return: returns the index of the maximum value.
+]]
+local function getMaxIndex(t, first, last)
+	local max_index = first
+	for i = first, last do
+		if t[i] > t[max_index] then
+			max_index = i
+		end
+	end
+	return max_index
+end
+
 Algorithms = {}
 
 --[[
-BogoSort shuffles the table randomly until it is ordered.
+BogoSort shuffles the table randomly until it is sorted.
 @param t: table in form of an array to be used by the algorithm.
 @param order: string that indicates the order of sorting (default: "ascending").
 @return: returns the sorted table. Otherwise, returns nil if t is nil.
@@ -82,16 +116,33 @@ function Algorithms.bogoSort(t, order)
 	return t
 end
 
-function Algorithms.selectionSort(t, inplace)
+--[[
+SelectionSort uses the index of the min/max value and swaps values until sorted.
+@param t: table in form of an array to be used by the algorithm.
+@param order: string that indicates the order of sorting (default: "ascending").
+@return: returns the sorted table. Otherwise, returns nil if t is nil.
+Warning: the sorting process happens in place, modifying the original table.
+]]
+function Algorithms.selectionSort(t, order)
 	if t == nil then return nil end
-	inplace = inplace or false
-	if inplace == false then
-		if #t < 2 then return t end
-		--Actual implementation.
-	elseif inplace == true then
-		if #t < 2 then return nil end
-		--Actual implementation.
+	local size = #t
+	if size < 2 then return t end
+	order = checkSortOrder(order) or "ascending"
+	local getIndex
+	if order == "ascending" then
+		getIndex = getMinIndex
+	else
+		getIndex = getMaxIndex
 	end
+	for i = 1, size - 1 do
+		local index = getIndex(t, i, size)
+		if index ~= i then
+			local temp = t[i]
+			t[i] = t[index]
+			t[index] = temp
+		end
+	end
+	return t
 end
 
 function Algorithms.bubbleSort(t, inplace)

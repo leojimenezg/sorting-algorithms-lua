@@ -17,12 +17,12 @@ local tests = {
 }
 
 local order = "asc"
-local algorithm = algorithms.bogoSort
+local algorithm = algorithms.selectionSort
 for i, test in pairs(tests) do
 	print("Test " .. i)
 	test = algorithm(test, order)
 	if test == nil then break end
-	for j=1, #test do
+	for j = 1, #test do
 		print(test[j])
 	end
 end
