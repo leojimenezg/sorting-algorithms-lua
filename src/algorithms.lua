@@ -91,6 +91,21 @@ local function getMaxIndex(t, first, last)
 	return max_index
 end
 
+--[[
+Compares two values based on an specified order.
+@param v1: first value to be used in the condition.
+@param v2: second value to be used in the condition.
+@param order: strings that indicates the polarity of the condition.
+@return: returns the result of the condition.
+]]
+local function shouldSwap(v1, v2, order)
+	if order == "ascending" then
+		return v1 > v2
+	else
+		return v1 < v2
+	end
+end
+
 Algorithms = {}
 
 --[[
@@ -145,16 +160,30 @@ function Algorithms.selectionSort(t, order)
 	return t
 end
 
-function Algorithms.bubbleSort(t, inplace)
+--[[
+BubbleSort swaps the min/max value constantly until sorted.
+@param t: table in form of an array to be used by the algorithm.
+@param order: string that indicates the order of sorting (default: "ascending").
+@return: returns the sorted table. Otherwise, returns nil if t is nil.
+Warning: the sorting process happens in place, modifying the original table.
+]]
+function Algorithms.bubbleSort(t, order)
 	if t == nil then return nil end
-	inplace = inplace or false
-	if inplace == false then
-		if #t < 2 then return t end
-		--Actual implementation.
-	elseif inplace == true then
-		if #t < 2 then return nil end
-		--Actual implementation.
+	local size = #t
+	if size < 2 then return t end
+	order = checkSortOrder(order) or "ascending"
+	local last = size - 1
+	for _ = 1, last do
+		for j = 1, last do
+			if shouldSwap(t[j], t[j + 1], order) then
+				local temp = t[j]
+				t[j] = t[j + 1]
+				t[j + 1] = temp
+			end
+		end
+		last = last - 1
 	end
+	return t
 end
 
 function Algorithms.mergeSort(t, inplace)

@@ -17,7 +17,7 @@ local tests = {
 }
 
 local order = "asc"
-local algorithm = algorithms.selectionSort
+local algorithm = algorithms.bubbleSort
 for i, test in pairs(tests) do
 	print("Test " .. i)
 	test = algorithm(test, order)
