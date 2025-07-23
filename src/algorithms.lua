@@ -92,18 +92,64 @@ local function getMaxIndex(t, first, last)
 end
 
 --[[
-Compares two values based on an specified order.
+Compares two values based on an specified order to know if v1 is in order.
 @param v1: first value to be used in the condition.
 @param v2: second value to be used in the condition.
 @param order: strings that indicates the polarity of the condition.
 @return: returns the result of the condition.
 ]]
-local function shouldSwap(v1, v2, order)
+local function shouldMoveValue(v1, v2, order)
 	if order == "ascending" then
 		return v1 > v2
 	else
 		return v1 < v2
 	end
+end
+
+--[[
+Merges two tables into one following an order.
+@param right: the right half table in form of an array to merge.
+@param left: the left half table in form of an array to merge.
+@param order: string that indicates the order of sorting.
+@return: returns a new table with the merged and order halfs.
+]]
+local function mergeTables(left, right, order)
+	local merged_table = {}
+	local l_index, r_index = 1, 1
+	local l_size, r_size = #left, #right
+	while l_index <= l_size and r_index <= r_size do
+		if not shouldMoveValue(left[l_index], right[r_index], order) then
+			table.insert(merged_table, left[l_index])
+			l_index = l_index + 1
+		else
+			table.insert(merged_table, right[r_index])
+			r_index = r_index + 1
+		end
+	end
+	while l_index <= l_size do
+		table.insert(merged_table, left[l_index])
+		l_index = l_index + 1
+	end
+	while r_index <= r_size do
+		table.insert(merged_table, right[r_index])
+		r_index = r_index + 1
+	end
+	return merged_table
+end
+
+--[[
+Process the MergeSort algorithm. Needed to avoid extra function calls.
+@param t: table in form of an array to be used by the algorithm.
+@param order: string that indicates the order of sorting.
+@return: returns the sorted table. Otherwise, returns nil if t is nil.
+]]
+local function completeMergeSort(t, order)
+	local size = #t
+	if size < 2 then return t end
+	local half_idx = math.floor(size / 2)
+	local left_half = completeMergeSort({table.unpack(t, 1, half_idx)}, order)
+	local right_half = completeMergeSort({table.unpack(t, half_idx + 1, size)}, order)
+	return mergeTables(left_half, right_half, order)
 end
 
 Algorithms = {}
@@ -175,7 +221,7 @@ function Algorithms.bubbleSort(t, order)
 	local last = size - 1
 	for _ = 1, last do
 		for j = 1, last do
-			if shouldSwap(t[j], t[j + 1], order) then
+			if shouldMoveValue(t[j], t[j + 1], order) then
 				local temp = t[j]
 				t[j] = t[j + 1]
 				t[j + 1] = temp
@@ -186,16 +232,19 @@ function Algorithms.bubbleSort(t, order)
 	return t
 end
 
-function Algorithms.mergeSort(t, inplace)
+--[[
+MergeSort divides the table in halfs until single elements and sorts by halfs.
+@param t: table in form of an array to be used by the algorithm.
+@param order: string that indicates the order of sorting (default: "ascending").
+@return: returns a new sorted table. Otherwise, returns nil if t is nil.
+Warning: the sorting process does not happen in place.
+]]
+function Algorithms.mergeSort(t, order)
 	if t == nil then return nil end
-	inplace = inplace or false
-	if inplace == false then
-		if #t < 2 then return t end
-		--Actual implementation.
-	elseif inplace == true then
-		if #t < 2 then return nil end
-		--Actual implementation.
-	end
+	if #t < 2 then return t end
+	order = checkSortOrder(order) or "ascending"
+	t = completeMergeSort(t, order)
+	return t
 end
 
 function Algorithms.quickSort(t, inplace)
@@ -208,15 +257,20 @@ function Algorithms.quickSort(t, inplace)
 		if #t < 2 then return nil end
 		--Actual implementation.
 	end
+	return t
 end
 
+--[[
+Checks if a table is sorted in an specific order.
+@param t: table in form of an array to be used by the algorithm.
+@param order: string that indicates the order of sorting (default: "ascending").
+@return: returns true if the table is sorted. Otherwise, returns false.
+]]
 function Algorithms.isSorted(t, order)
-	order = order or "ascending"
-	if order == "asc" or order == "ascending" then
+	order = checkSortOrder(order) or "ascending"
+	if order == "ascending" then
 		return checkSortAsc(t)
-	elseif order == "des" or order == "descending" then
-		return checkSortDes(t)
 	else
-		return false
+		return checkSortDes(t)
 	end
 end

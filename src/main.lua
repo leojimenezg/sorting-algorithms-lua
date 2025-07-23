@@ -17,8 +17,9 @@ local tests = {
 }
 
 local order = "asc"
-local algorithm = algorithms.bubbleSort
+local algorithm = algorithms.mergeSort
 for i, test in pairs(tests) do
+	if test == nil then break end
 	print("Test " .. i)
 	test = algorithm(test, order)
 	if test == nil then break end
