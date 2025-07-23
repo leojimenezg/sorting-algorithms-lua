@@ -73,6 +73,7 @@ Each sorting function follows a consistent signature: `algorithmName(table, orde
 * `order`: String parameter accepting "asc"/"ascending" or "des"/"descending". This parameter accepts both abbreviated and full forms for allowing users to choose their preferred style without sacrificing functionality.
 
 **In-Place Algorithms (bubbleSort, selectionSort, quickSort, bogoSort):** These functions modify the original table and return a reference to it. The return value is provided for convenience and method chaining, but the original table is already sorted.
+
 **Non In-Place Algorithm (mergeSort):** Due to the recursive nature of the merge operation and the complexity of implementing it in-place, this function creates a new sorted table. The original table remains unchanged.
 
 ### Design decisions
