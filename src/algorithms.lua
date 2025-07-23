@@ -247,16 +247,43 @@ function Algorithms.mergeSort(t, order)
 	return t
 end
 
-function Algorithms.quickSort(t, inplace)
+--[[
+QuickSort selects a pivot value in order to create two different halfs until
+single elements and sorts by halfs. Uses Lomuto partition algorithm.
+@param t: table in form of an array to be used by the algorithm.
+@param order: string that indicates the order of sorting (default: "ascending").
+@param first: int that indicates the first index of the table. Not required.
+@param last: int that indicates the last index of the table. Not required.
+@return: returns the sorted table. Otherwise, returns nil if t is nil.
+Warning: the sorting process happens in place, modifying the original table.
+]]
+function Algorithms.quickSort(t, order, first, last)
 	if t == nil then return nil end
-	inplace = inplace or false
-	if inplace == false then
-		if #t < 2 then return t end
-		--Actual implementation.
-	elseif inplace == true then
-		if #t < 2 then return nil end
-		--Actual implementation.
+	first = first or 1
+	last = last or #t
+	if first >= last then return t end
+	order = checkSortOrder(order) or "ascending"
+	local middle_idx = math.floor((first + last) / 2)
+	local pivot_value = t[middle_idx]
+	local temp1 = t[last]
+	t[last] = pivot_value
+	t[middle_idx] = temp1
+	local limiter_idx = first
+	for i = first, last - 1 do
+		if not shouldMoveValue(t[i], pivot_value, order) then
+			local temp2 = t[limiter_idx]
+			t[limiter_idx] = t[i]
+			t[i] = temp2
+			limiter_idx = limiter_idx + 1
+		end
 	end
+	local temp3 = t[limiter_idx]
+	t[limiter_idx] = pivot_value
+	t[last] = temp3
+	--Left half
+	Algorithms.quickSort(t, order, first, limiter_idx - 1)
+	--Right half
+	Algorithms.quickSort(t, order, limiter_idx + 1, last)
 	return t
 end
 

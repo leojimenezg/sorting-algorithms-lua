@@ -17,7 +17,7 @@ local tests = {
 }
 
 local order = "asc"
-local algorithm = algorithms.mergeSort
+local algorithm = algorithms.quickSort
 for i, test in pairs(tests) do
 	if test == nil then break end
 	print("Test " .. i)
